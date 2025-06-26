@@ -12,8 +12,6 @@ API Testing/
 │   └── crypto_service.py       # API logic and business logic
 ├── templates/
 │   └── dashboard.html          # Web interface
-├── Crypto_API_Testing.py       # Original command-line script
-├── test_app.py                 # API testing script
 └── README.md                   # This file
 ```
 
@@ -54,6 +52,7 @@ API Testing/
 - View top gainers and losers in the last 24 hours
 - Real-time price change tracking
 - Side-by-side comparison
+- Month-over-month growth tracking
 
 ### 🌍 Global Metrics Tab
 - Total market capitalization
@@ -173,4 +172,4 @@ This project is for educational purposes. Please respect the CoinMarketCap API t
 
 ## 🤝 Contributing
 
-Feel free to submit issues and enhancement requests! 
+Feel free to submit issues and enhancement requests!
