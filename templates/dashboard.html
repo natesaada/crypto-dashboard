@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Crypto Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 15px 15px 0 0;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            background: white;
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 0 0 15px 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .config-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .config-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .config-group input, .config-group select {
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .config-group input:focus, .config-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .data-table {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .positive {
+            color: #28a745;
+        }
+
+        .negative {
+            color: #dc3545;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .number-format {
+            font-family: 'Courier New', monospace;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .search-section {
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .trending-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .trending-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .trending-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .trending-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .modal { position: fixed; z-index: 1000; left: 0; top: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; }
+        .modal-content {
+            background: #fff;
+            border-radius: 18px;
+            padding: 36px 36px 28px 36px;
+            min-width: 320px;
+            max-width: 520px;
+            width: 90vw;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .modal-close {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            font-size: 2rem;
+            color: #888;
+            cursor: pointer;
+            font-weight: bold;
+            background: none;
+            border: none;
+            transition: color 0.2s;
+        }
+        .modal-close:hover {
+            color: #764ba2;
+        }
+        .modal-content h2 {
+            margin-bottom: 18px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-content .info-row {
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        .modal-content .info-label {
+            font-weight: bold;
+            margin-right: 8px;
+            color: #764ba2;
+        }
+        .modal-content .info-value {
+            font-family: 'Courier New', monospace;
+            color: #222;
+        }
+        .modal-content img {
+            max-width: 56px;
+            max-height: 56px;
+            vertical-align: middle;
+            margin-right: 14px;
+            border-radius: 50%;
+            border: 2px solid #eee;
+            background: #fafafa;
+        }
+        @media (max-width: 600px) {
+            .modal-content {
+                padding: 18px 8px 14px 8px;
+                min-width: 0;
+                max-width: 98vw;
+            }
+            .modal-content h2 {
+                font-size: 1.1rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Advanced Crypto Dashboard</h1>
+            <p>Comprehensive cryptocurrency market data with multiple API endpoints</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('market')">📊 Market Data</button>
+            <button class="tab" onclick="showTab('search')">🔍 Search</button>
+            <button class="tab" onclick="showTab('trending')">📈 Trending</button>
+            <button class="tab" onclick="showTab('global')">🌍 Global Metrics</button>
+            <button class="tab" onclick="showTab('quotes')">💱 Quotes</button>
+        </div>
+
+        <div class="tab-content">
+            <!-- Market Data Tab -->
+            <div id="market" class="tab-pane active">
+                <div class="config-panel">
+                    <h3>Market Data Configuration</h3>
+                    <div class="config-grid">
+                        <div class="config-group">
+                            <label for="limit">Number of Cryptocurrencies:</label>
+                            <input type="number" id="limit" value="10" min="1" max="100">
+                        </div>
+                        <div class="config-group">
+                            <label for="start">Starting Position:</label>
+                            <input type="number" id="start" value="1" min="1">
+                        </div>
+                        <div class="config-group">
+                            <label for="convert">Currency:</label>
+                            <select id="convert">
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                                <option value="JPY">JPY</option>
+                            </select>
+                        </div>
+                        <div class="config-group">
+                            <label for="sort">Sort By:</label>
+                            <select id="sort">
+                                <option value="market_cap">Market Cap</option>
+                                <option value="price">Price</option>
+                                <option value="volume_24h">24h Volume</option>
+                                <option value="percent_change_24h">24h Change</option>
+                            </select>
+                        </div>
+                        <div class="config-group">
+                            <button class="btn" onclick="loadMarketData()">🔄 Refresh Data</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="market-data-container">
+                    <div class="loading">Loading market data...</div>
+                </div>
+            </div>
+
+            <!-- Search Tab -->
+            <div id="search" class="tab-pane">
+                <div class="search-section">
+                    <h3>Search Cryptocurrencies</h3>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                        <input type="text" id="search-query" class="search-input" placeholder="Enter cryptocurrency name or symbol (e.g., Bitcoin, BTC, ETH)">
+                        <select id="search-type" style="padding: 10px; border-radius: 6px; border: 2px solid #e1e5e9; font-size: 14px;">
+                            <option value="name">Name</option>
+                            <option value="symbol">Symbol</option>
+                        </select>
+                        <button class="btn" onclick="searchCryptocurrencies()">🔍 Search</button>
+                    </div>
+                </div>
+                <div id="search-results-container">
+                    <div class="loading">Enter a search query to find cryptocurrencies</div>
+                </div>
+            </div>
+
+            <!-- Trending Tab -->
+            <div id="trending" class="tab-pane">
+                <h3>Trending Cryptocurrencies</h3>
+                <button class="btn" onclick="loadTrendingData()">🔄 Refresh Trending</button>
+                <div id="trending-container">
+                    <div class="loading">Loading trending data...</div>
+                </div>
+            </div>
+
+            <!-- Global Metrics Tab -->
+            <div id="global" class="tab-pane">
+                <h3>Global Market Metrics</h3>
+                <div class="config-panel">
+                    <div class="config-group">
+                        <label for="global-currency">Currency:</label>
+                        <select id="global-currency">
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                            <option value="JPY">JPY</option>
+                        </select>
+                        <button class="btn" onclick="loadGlobalMetrics()">🔄 Refresh Metrics</button>
+                    </div>
+                </div>
+                <div id="global-metrics-container">
+                    <div class="loading">Loading global metrics...</div>
+                </div>
+            </div>
+
+            <!-- Quotes Tab -->
+            <div id="quotes" class="tab-pane">
+                <h3>Specific Cryptocurrency Quotes</h3>
+                <div class="config-panel">
+                    <div class="config-group">
+                        <label for="quote-symbols">Symbols (comma-separated):</label>
+                        <input type="text" id="quote-symbols" placeholder="BTC,ETH,ADA,DOT" value="BTC,ETH,ADA">
+                    </div>
+                    <div class="config-group">
+                        <label for="quote-currency">Currency:</label>
+                        <select id="quote-currency">
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                            <option value="JPY">JPY</option>
+                        </select>
+                    </div>
+                    <div class="config-group">
+                        <button class="btn" onclick="loadQuotes()">💱 Get Quotes</button>
+                    </div>
+                </div>
+                <div id="quotes-container">
+                    <div class="loading">Enter symbols to get quotes</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal will be created dynamically -->
+
+    <script>
+        function formatNumber(num) {
+            if (num === null || num === undefined) return 'N/A';
+            if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+            return num.toFixed(2);
+        }
+
+        function formatPrice(price) {
+            if (price === null || price === undefined) return 'N/A';
+            if (price < 0.01) return '$' + price.toFixed(8);
+            if (price < 1) return '$' + price.toFixed(4);
+            return '$' + price.toFixed(2);
+        }
+
+        function formatPercentage(percent) {
+            if (percent === null || percent === undefined) return 'N/A';
+            const formatted = percent.toFixed(2);
+            return formatted > 0 ? '+' + formatted + '%' : formatted + '%';
+        }
+
+        function showTab(tabName) {
+            // Hide all tab panes
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab pane
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Load data for the selected tab
+            switch(tabName) {
+                case 'market':
+                    loadMarketData();
+                    break;
+                case 'trending':
+                    loadTrendingData();
+                    break;
+                case 'global':
+                    loadGlobalMetrics();
+                    break;
+            }
+        }
+
+        function createMarketTable(data) {
+            if (data.error) {
+                return `<div class="error">Error: ${data.error}</div>`;
+            }
+
+            if (!data || data.length === 0) {
+                return '<div class="loading">No data available</div>';
+            }
+
+            let tableHTML = `
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Name</th>
+                                <th>Symbol</th>
+                                <th>Price</th>
+                                <th>Market Cap</th>
+                                <th>24h Volume</th>
+                                <th>24h Change</th>
+                                <th>7d Change</th>
+                                <th>Circulating Supply</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            data.forEach(coin => {
+                const change24hClass = coin.percent_change_24h > 0 ? 'positive' : 'negative';
+                const change7dClass = coin.percent_change_7d > 0 ? 'positive' : 'negative';
+                tableHTML += `
+                    <tr>
+                        <td class="number-format">${coin.rank}</td>
+                        <td><strong>${coin.name}</strong></td>
+                        <td><code>${coin.symbol}</code></td>
+                        <td class="number-format">${formatPrice(coin.price_usd)}</td>
+                        <td class="number-format">${formatNumber(coin.market_cap)}</td>
+                        <td class="number-format">${formatNumber(coin.volume_24h)}</td>
+                        <td class="number-format ${change24hClass}">${formatPercentage(coin.percent_change_24h)}</td>
+                        <td class="number-format ${change7dClass}">${formatPercentage(coin.percent_change_7d)}</td>
+                        <td class="number-format">${formatNumber(coin.circulating_supply)}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody></table></div>';
+            return tableHTML;
+        }
+
+        async function loadMarketData() {
+            const limit = document.getElementById('limit').value;
+            const start = document.getElementById('start').value;
+            const convert = document.getElementById('convert').value;
+            const sort = document.getElementById('sort').value;
+            
+            const container = document.getElementById('market-data-container');
+            container.innerHTML = '<div class="loading">Loading market data...</div>';
+
+            try {
+                const response = await fetch(`/api/crypto?limit=${limit}&start=${start}&convert=${convert}&sort=${sort}`);
+                const data = await response.json();
+                
+                container.innerHTML = createMarketTable(data);
+            } catch (error) {
+                container.innerHTML = `<div class="error">Error loading data: ${error.message}</div>`;
+            }
+        }
+
+        async function searchCryptocurrencies() {
+            const query = document.getElementById('search-query').value.trim();
+            const type = document.getElementById('search-type').value;
+            const container = document.getElementById('search-results-container');
+            
+            if (!query) {
+                container.innerHTML = '<div class="error">Please enter a search query</div>';
+                return;
+            }
+            
+            container.innerHTML = '<div class="loading">Searching...</div>';
+
+            try {
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&type=${type}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    container.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                    return;
+                }
+
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="loading">No results found</div>';
+                    return;
+                }
+
+                let tableHTML = `
+                    <div class="data-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Symbol</th>
+                                    <th>Rank</th>
+                                    <th>Status</th>
+                                    <th>First Data</th>
+                                    <th>Last Data</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                data.forEach(coin => {
+                    tableHTML += `
+                        <tr>
+                            <td><strong>${coin.name}</strong></td>
+                            <td><code>${coin.symbol}</code></td>
+                            <td class="number-format">${coin.rank || 'N/A'}</td>
+                            <td>${coin.is_active ? '🟢 Active' : '🔴 Inactive'}</td>
+                            <td>${coin.first_historical_data || 'N/A'}</td>
+                            <td>${coin.last_historical_data || 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+
+                tableHTML += '</tbody></table></div>';
+                container.innerHTML = tableHTML;
+            } catch (error) {
+                container.innerHTML = `<div class="error">Error searching: ${error.message}</div>`;
+            }
+        }
+
+        async function loadTrendingData() {
+            const container = document.getElementById('trending-container');
+            container.innerHTML = '<div class="loading">Loading trending data...</div>';
+
+            try {
+                const response = await fetch('/api/trending');
+                const data = await response.json();
+                
+                let html = '<div class="trending-section">';
+                
+                // Top Gainers
+                html += '<div class="trending-card">';
+                html += '<div class="trending-title">📈 Top Gainers (24h)</div>';
+                html += '<div class="data-table">';
+                html += '<table><thead><tr><th>Name</th><th>Symbol</th><th>24h Change</th><th>30d Change</th><th>Price</th></tr></thead><tbody>';
+                
+                data.top_gainers.forEach(coin => {
+                    const pct30d = (typeof coin.percent_change_30d === 'number' && !isNaN(coin.percent_change_30d)) ? coin.percent_change_30d : 0;
+                    const change30dClass = pct30d > 0 ? 'positive' : 'negative';
+                    html += `
+                        <tr>
+                            <td><a href="#" class="trending-link" data-symbol="${coin.symbol}"><strong>${coin.name}</strong></a></td>
+                            <td><code>${coin.symbol}</code></td>
+                            <td class="positive">${formatPercentage(coin.percent_change_24h)}</td>
+                            <td class="${change30dClass}">${formatPercentage(pct30d)}</td>
+                            <td>${formatPrice(coin.price_usd)}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table></div></div>';
+                
+                // Top Losers
+                html += '<div class="trending-card">';
+                html += '<div class="trending-title">📉 Top Losers (24h)</div>';
+                html += '<div class="data-table">';
+                html += '<table><thead><tr><th>Name</th><th>Symbol</th><th>24h Change</th><th>30d Change</th><th>Price</th></tr></thead><tbody>';
+                
+                data.top_losers.forEach(coin => {
+                    const pct30d = (typeof coin.percent_change_30d === 'number' && !isNaN(coin.percent_change_30d)) ? coin.percent_change_30d : 0;
+                    const change30dClass = pct30d > 0 ? 'positive' : 'negative';
+                    html += `
+                        <tr>
+                            <td><a href="#" class="trending-link" data-symbol="${coin.symbol}"><strong>${coin.name}</strong></a></td>
+                            <td><code>${coin.symbol}</code></td>
+                            <td class="negative">${formatPercentage(coin.percent_change_24h)}</td>
+                            <td class="${change30dClass}">${formatPercentage(pct30d)}</td>
+                            <td>${formatPrice(coin.price_usd)}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += '</tbody></table></div></div>';
+                html += '</div>';
+                
+                container.innerHTML = html;
+                // True event delegation for trending-link clicks
+                container.addEventListener('click', function(e) {
+                    const link = e.target.closest('.trending-link');
+                    if (link) {
+                        e.preventDefault();
+                        const symbol = link.getAttribute('data-symbol');
+                        console.log('Trending link clicked:', symbol);
+                        showCryptoInfo(e, symbol);
+                    }
+                });
+            } catch (error) {
+                container.innerHTML = `<div class="error">Error loading trending data: ${error.message}</div>`;
+            }
+        }
+
+        async function loadGlobalMetrics() {
+            const currency = document.getElementById('global-currency').value;
+            const container = document.getElementById('global-metrics-container');
+            container.innerHTML = '<div class="loading">Loading global metrics...</div>';
+
+            try {
+                const response = await fetch(`/api/global-metrics?convert=${currency}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    container.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                    return;
+                }
+
+                let html = '<div class="metrics-grid">';
+                html += `
+                    <div class="metric-card">
+                        <div class="metric-value">${formatNumber(data.total_market_cap)}</div>
+                        <div class="metric-label">Total Market Cap</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${formatNumber(data.total_volume_24h)}</div>
+                        <div class="metric-label">24h Volume</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${data.bitcoin_dominance?.toFixed(2) || 'N/A'}%</div>
+                        <div class="metric-label">Bitcoin Dominance</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${data.ethereum_dominance?.toFixed(2) || 'N/A'}%</div>
+                        <div class="metric-label">Ethereum Dominance</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${data.active_cryptocurrencies || 'N/A'}</div>
+                        <div class="metric-label">Active Cryptocurrencies</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${data.active_exchanges || 'N/A'}</div>
+                        <div class="metric-label">Active Exchanges</div>
+                    </div>
+                `;
+                html += '</div>';
+                
+                html += `<div class="success">Last updated: ${data.last_updated || 'N/A'}</div>`;
+                
+                container.innerHTML = html;
+            } catch (error) {
+                container.innerHTML = `<div class="error">Error loading global metrics: ${error.message}</div>`;
+            }
+        }
+
+        async function loadQuotes() {
+            const symbols = document.getElementById('quote-symbols').value.trim();
+            const currency = document.getElementById('quote-currency').value;
+            const container = document.getElementById('quotes-container');
+            
+            if (!symbols) {
+                container.innerHTML = '<div class="error">Please enter symbols</div>';
+                return;
+            }
+            
+            container.innerHTML = '<div class="loading">Loading quotes...</div>';
+
+            try {
+                const response = await fetch(`/api/crypto/quotes?symbols=${encodeURIComponent(symbols)}&convert=${currency}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    container.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                    return;
+                }
+
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="loading">No quotes found</div>';
+                    return;
+                }
+
+                let tableHTML = `
+                    <div class="data-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Symbol</th>
+                                    <th>Price</th>
+                                    <th>Market Cap</th>
+                                    <th>24h Volume</th>
+                                    <th>24h Change</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                data.forEach(coin => {
+                    const changeClass = coin.percent_change_24h > 0 ? 'positive' : 'negative';
+                    tableHTML += `
+                        <tr>
+                            <td><strong>${coin.name}</strong></td>
+                            <td><code>${coin.symbol}</code></td>
+                            <td class="number-format">${formatPrice(coin.price_usd)}</td>
+                            <td class="number-format">${formatNumber(coin.market_cap)}</td>
+                            <td class="number-format">${formatNumber(coin.volume_24h)}</td>
+                            <td class="number-format ${changeClass}">${formatPercentage(coin.percent_change_24h)}</td>
+                        </tr>
+                    `;
+                });
+
+                tableHTML += '</tbody></table></div>';
+                container.innerHTML = tableHTML;
+            } catch (error) {
+                container.innerHTML = `<div class="error">Error loading quotes: ${error.message}</div>`;
+            }
+        }
+
+        function showCryptoInfo(event, symbol) {
+            console.log('showCryptoInfo called for symbol:', symbol);
+            event.preventDefault();
+            // Remove any existing modal
+            closeCryptoInfo();
+            // Create overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'modal';
+            overlay.style.display = 'flex';
+            overlay.id = 'crypto-info-modal';
+            overlay.innerHTML = '<div class="modal-content"><span class="modal-close">&times;</span><div class="loading">Loading info...</div></div>';
+            document.body.appendChild(overlay);
+
+            // Close on overlay click (but not when clicking modal content)
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) closeCryptoInfo();
+            });
+            // Close on X click
+            overlay.querySelector('.modal-close').onclick = closeCryptoInfo;
+
+            fetch(`/api/crypto/info/${symbol.toUpperCase()}`)
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Crypto info response:', data); // Debug log
+                    if (data.error) {
+                        overlay.innerHTML = `<div class=\"modal-content\"><span class=\"modal-close\">&times;</span><div class=\"error\">${data.error}</div></div>`;
+                        overlay.querySelector('.modal-close').onclick = closeCryptoInfo;
+                        return;
+                    }
+                    let html = `<div class=\"modal-content\">
+                        <span class=\"modal-close\">&times;</span>
+                        <h2>${data.name} <span style='font-size:1rem;color:#888;'>(${data.symbol})</span></h2>
+                        ${data.logo ? `<img src='${data.logo}' alt='${data.symbol} logo'>` : ''}
+                        <div class='info-row'><span class='info-label'>Category:</span> <span class='info-value'>${data.category || 'N/A'}</span></div>
+                        <div class='info-row'><span class='info-label'>Description:</span> <span class='info-value'>${data.description ? data.description.substring(0, 300) + (data.description.length > 300 ? '...' : '') : 'N/A'}</span></div>
+                        <div class='info-row'><span class='info-label'>Tags:</span> <span class='info-value'>${(data.tags || []).join(', ')}</span></div>
+                        <div class='info-row'><span class='info-label'>Date Added:</span> <span class='info-value'>${data.date_added || 'N/A'}</span></div>
+                        <div class='info-row'><span class='info-label'>Website:</span> <span class='info-value'>${data.urls && data.urls.website && data.urls.website[0] ? `<a href='${data.urls.website[0]}' target='_blank'>${data.urls.website[0]}</a>` : 'N/A'}</span></div>
+                    </div>`;
+                    overlay.innerHTML = html;
+                    overlay.querySelector('.modal-close').onclick = closeCryptoInfo;
+                })
+                .catch((err) => {
+                    console.error('Error fetching crypto info:', err);
+                    overlay.innerHTML = `<div class=\"modal-content\"><span class=\"modal-close\">&times;</span><div class=\"error\">Error loading info.</div></div>`;
+                    overlay.querySelector('.modal-close').onclick = closeCryptoInfo;
+                });
+        }
+
+        window.showCryptoInfo = showCryptoInfo;
+
+        function closeCryptoInfo() {
+            const modal = document.getElementById('crypto-info-modal');
+            if (modal) modal.remove();
+        }
+
+        // Load initial data when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMarketData();
+        });
+
+        // Auto-refresh market data every 30 seconds
+        setInterval(() => {
+            if (document.querySelector('#market .tab-pane.active')) {
+                loadMarketData();
+            }
+        }, 30000);
+    </script>
+</body>
+</html> 
