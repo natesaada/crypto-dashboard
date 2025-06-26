@@ -4,7 +4,7 @@ class Config:
     """Configuration settings for the application"""
     
     # CoinMarketCap API Configuration
-    CMC_API_KEY = 'e131422b-6290-4d0c-8fad-2041edeb4249'
+    CMC_API_KEY = os.environ.get('CMC_API_KEY') or 'e131422b-6290-4d0c-8fad-2041edeb4249'
     CMC_BASE_URL = 'https://pro-api.coinmarketcap.com'
     
     # Flask Configuration

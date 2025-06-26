@@ -65,4 +65,11 @@ coverage.xml
 .DS_Store
 
 # Windows
-Thumbs.db 
+Thumbs.db
+
+# Environment variables and sensitive files
+.env
+.env.local
+.env.production
+config_local.py
+secrets.py 

@@ -12,6 +12,7 @@ API Testing/
 │   └── crypto_service.py       # API logic and business logic
 ├── templates/
 │   └── dashboard.html          # Web interface
+├── env_example.txt             # Environment variables template
 └── README.md                   # This file
 ```
 
@@ -34,6 +35,52 @@ API Testing/
    - Centralized settings in `Config` class
    - Environment variable support
    - API keys and limits management
+
+## 🔒 Security Setup
+
+### ⚠️ IMPORTANT: API Key Configuration
+
+**Before running the application, you MUST set up your API key:**
+
+1. **Get a CoinMarketCap API key:**
+   - Visit: https://coinmarketcap.com/api/
+   - Sign up for a free account
+   - Generate an API key
+
+2. **Set up environment variables:**
+   
+   **Option A: Create a .env file (recommended)**
+   ```bash
+   # Copy the example file
+   cp env_example.txt .env
+   
+   # Edit .env and add your API key
+   CMC_API_KEY=your_actual_api_key_here
+   ```
+   
+   **Option B: Set environment variable directly**
+   ```bash
+   # Windows PowerShell
+   $env:CMC_API_KEY="your_actual_api_key_here"
+   
+   # Windows Command Prompt
+   set CMC_API_KEY=your_actual_api_key_here
+   
+   # Linux/Mac
+   export CMC_API_KEY="your_actual_api_key_here"
+   ```
+
+3. **Install python-dotenv (optional but recommended):**
+   ```bash
+   pip install python-dotenv
+   ```
+
+### 🔐 Security Notes
+
+- **Never commit your API key** to version control
+- **The .env file is ignored** by git (see .gitignore)
+- **Use environment variables** in production
+- **Rotate your API key** if it gets exposed
 
 ## 🚀 Features
 
@@ -86,29 +133,39 @@ API Testing/
 - Python 3.7+
 - Flask
 - Requests library
+- CoinMarketCap API key
 
 ### Installation
 
-1. **Install dependencies:**
+1. **Clone the repository:**
    ```bash
-   pip install flask requests
+   git clone https://github.com/natesaada/crypto-dashboard.git
+   cd crypto-dashboard
    ```
 
-2. **Run the application:**
+2. **Install dependencies:**
+   ```bash
+   pip install flask requests python-dotenv
+   ```
+
+3. **Set up your API key** (see Security Setup section above)
+
+4. **Run the application:**
    ```bash
    python app.py
    ```
 
-3. **Open your browser:**
+5. **Open your browser:**
    Navigate to `http://127.0.0.1:5000`
 
 ## 🔧 Configuration
 
 Edit `config.py` to customize:
-- API key
 - Supported currencies
 - Rate limiting
 - Default values
+
+**Note:** API key should be set via environment variables, not in config.py
 
 ## 📊 API Usage Examples
 
@@ -132,13 +189,6 @@ curl "http://127.0.0.1:5000/api/global-metrics?convert=USD"
 curl "http://127.0.0.1:5000/api/crypto/quotes?symbols=BTC,ETH,ADA&convert=USD"
 ```
 
-## 🧪 Testing
-
-Run the test script to verify API connectivity:
-```bash
-python test_app.py
-```
-
 ## 🔄 Auto-Refresh
 
 The dashboard automatically refreshes market data every 30 seconds when on the Market Data tab.
@@ -153,9 +203,10 @@ The dashboard automatically refreshes market data every 30 seconds when on the M
 
 ## 🔒 Security Notes
 
-- API key is stored in configuration file (consider using environment variables in production)
+- API key is stored in environment variables (secure)
 - Input validation and sanitization implemented
 - Rate limiting configured to prevent API abuse
+- Sensitive files are excluded from version control
 
 ## 🚀 Future Enhancements
 
